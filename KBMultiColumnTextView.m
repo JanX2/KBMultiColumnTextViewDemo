@@ -96,22 +96,22 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (NSLayoutManager *)layoutManager
 {
-	return layoutManager;
+	return [[layoutManager retain] autorelease];
 }
 
 - (NSTextStorage *)textStorage
 {
-	return [layoutManager textStorage];
+	return [[[layoutManager textStorage] retain] autorelease];
 }
 
 - (NSArray *)textViews
 {
-	return textViews;
+	return [[textViews retain] autorelease];
 }
 
 - (NSTextView *)firstTextView
 {
-	return [layoutManager firstTextView];
+	return [[[layoutManager firstTextView] retain] autorelease];
 }
 
 - (NSInteger)numberOfColumns
@@ -296,7 +296,6 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 		[self rescaleTextView:textView];
 	
     [self addSubview:textView];
-    [textView release];
 	
 	[layoutManager addTextContainer:textContainer];
     [textContainer release];
@@ -305,6 +304,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	[tvs addObject:textView];
 	[textViews release];
 	textViews = [[NSArray alloc] initWithArray:tvs];
+
+    [textView release];
 	
 	// Now need to recalculate own frame
 	[self recalculateFrame];
