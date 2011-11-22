@@ -25,9 +25,10 @@ extern NSString *KBMultiColumnTextViewDidRemoveColumnNotification;
 	CGFloat scalePercent;
 }
 
+@property (copy) NSArray *textViews;
+
 - (NSLayoutManager *)layoutManager;
 - (NSTextStorage *)textStorage;
-- (NSArray *)textViews;
 - (NSTextView *)firstTextView;
 - (NSInteger)numberOfColumns;
 - (void)setDelegate:(id)anObject;

@@ -30,6 +30,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 @implementation KBMultiColumnTextView
 
+@synthesize textViews;
+
 /*************************** Init/Dealloc ***************************/
 
 #pragma mark -
@@ -42,7 +44,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	if (self)
     {
 		delegate = nil;
-		textViews = [[NSArray alloc] init];
+		self.textViews = [[NSArray alloc] init];
         [self setBackgroundColor:[NSColor whiteColor]];
 		[self setColumnWidth:360.0f];
 		[self setBorderSize:NSMakeSize(20.0f, 16.0f)];
@@ -77,8 +79,9 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[layoutManager release];
-	[textViews release];
 	[backgroundColor release];
+	self.textViews = nil;
+
 	[super dealloc];
 }
 
@@ -102,11 +105,6 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 - (NSTextStorage *)textStorage
 {
 	return [[[layoutManager textStorage] retain] autorelease];
-}
-
-- (NSArray *)textViews
-{
-	return [[textViews retain] autorelease];
 }
 
 - (NSTextView *)firstTextView
@@ -165,10 +163,10 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	textViewClass = tvClass;
 	
 	// Go through and replace all text views with ones of the specified class
-	NSMutableArray *newTextViews = [NSMutableArray arrayWithCapacity:[textViews count]];
+	NSMutableArray *newTextViews = [NSMutableArray arrayWithCapacity:[self.textViews count]];
 	id newTextView;
 	NSRect frame;
-	for (NSTextView *textView in textViews)
+	for (NSTextView *textView in self.textViews)
 	{
 		frame = [textView frame];
 		newTextView = [[textViewClass alloc] initWithFrame:frame
@@ -177,8 +175,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 		[self rescaleTextView:newTextView];
 		[newTextViews addObject:newTextView];
 	}
-	[textViews release];
-	textViews = [newTextViews copy];
+	self.textViews = newTextViews;
 	
 	// Ensure our attributes are still valid
 	[self setupInitialTextViewSharedState];
@@ -252,7 +249,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	NSRect frame;
 	CGFloat xPos = 0.0f;
-	for (NSTextView *textView in textViews)
+	for (NSTextView *textView in self.textViews)
 	{
 		frame = [self bounds];
 		frame.origin.x = xPos;
@@ -265,10 +262,10 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (void)recalculateFrame
 {
-	if ([textViews count] < 1)	// This should never be the case...
+	if ([self.textViews count] < 1)	// This should never be the case...
 		return;
 	NSRect newFrame = [self frame];
-	newFrame.size.width = NSMaxX([[textViews lastObject] frame]) + borderSize.width;
+	newFrame.size.width = NSMaxX([[self.textViews lastObject] frame]) + borderSize.width;
 	
 	[self setFrame:newFrame];
 	[self setNeedsDisplay:YES];
@@ -281,7 +278,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	
     // Figure frame for NSTextView (and NSTextContainer size)
 	NSRect frame = NSInsetRect([self bounds], borderSize.width, borderSize.height);
-	frame.origin.x = ([textViews count] * columnWidth) + borderSize.width;
+	frame.origin.x = ([self.textViews count] * columnWidth) + borderSize.width;
 	frame.size.width = columnWidth - (borderSize.width * 2.0f);
 	
     // Create and configure NSTextContainer
@@ -304,10 +301,9 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	[layoutManager addTextContainer:textContainer];
     [textContainer release];
 	
-	NSMutableArray *tvs = [textViews mutableCopy];
+	NSMutableArray *tvs = [self.textViews mutableCopy];
 	[tvs addObject:textView];
-	[textViews release];
-	textViews = [tvs copy];
+	self.textViews = tvs;
 	[tvs release];
 
     [textView release];
@@ -321,14 +317,13 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (void)removeColumn
 {	
-	[[textViews lastObject] removeFromSuperview];
+	[[self.textViews lastObject] removeFromSuperview];
     NSArray *textContainers = [layoutManager textContainers];
     [layoutManager removeTextContainerAtIndex:[textContainers count] - 1];
 	
-	NSMutableArray *tvs = [textViews mutableCopy];
+	NSMutableArray *tvs = [self.textViews mutableCopy];
 	[tvs removeLastObject];
-	[textViews release];
-	textViews = [tvs copy];
+	self.textViews = tvs;
 	[tvs release];
 	
 	// Now need to recalculate own frame
@@ -358,7 +353,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	frame.origin.x = 0.0f;
 	frame.size.width = columnWidth - (borderSize.width * 2.0f);
 	
-	for (NSTextView *textView in textViews)
+	for (NSTextView *textView in self.textViews)
 	{
 		frame.origin.x += borderSize.width;
 		[textView setFrame:frame];
@@ -371,7 +366,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (void)viewWillStartLiveResize
 {
-	for (NSTextView *tv in textViews)
+	for (NSTextView *tv in self.textViews)
 		[tv setPostsFrameChangedNotifications:NO];
 	
 	[super viewWillStartLiveResize];
@@ -381,7 +376,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	[super viewDidEndLiveResize];
 	
-	for (NSTextView *tv in textViews)
+	for (NSTextView *tv in self.textViews)
 		[tv setPostsFrameChangedNotifications:YES];
 }
 
@@ -430,12 +425,12 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	id sender = [notification object];
 	
-	if (![textViews containsObject:sender])
+	if (![self.textViews containsObject:sender])
 		return;
 	
 	// This is a fix for a problem that also occurs in TextEdit...
 	if ([[layoutManager textStorage] length] == 0)
-		while ([textViews count] > 1) [self removeColumn];
+		while ([self.textViews count] > 1) [self removeColumn];
 	
 	// If we the text has been moved into a different text view, make sure it becomes fully visible
 	NSRect frame = [[layoutManager textViewForBeginningOfSelection] frame];
@@ -451,7 +446,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	id sender = [notification object];
 	
-	if (![textViews containsObject:sender])
+	if (![self.textViews containsObject:sender])
 		return;
 	
 	// If none of the given text view is visible, make it visible
@@ -481,10 +476,10 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	}
 	
 	NSUInteger thisIndex = [containers indexOfObject:tc];
-	if (thisIndex >= [textViews count])
+	if (thisIndex >= [self.textViews count])
 		return;
 	
-	NSTextView *tv = [textViews objectAtIndex:thisIndex];
+	NSTextView *tv = [self.textViews objectAtIndex:thisIndex];
 	NSRect frame = [tv frame];
 	if (!NSContainsRect([self visibleRect],frame))
 	{
@@ -501,7 +496,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 // Handle scrolling using page up and page down
 - (BOOL)textView:(NSTextView *)aTextView doCommandBySelector:(SEL)aSelector
 {
-	if (![textViews containsObject:aTextView])
+	if (![self.textViews containsObject:aTextView])
 		return NO;
 	
 	if (aSelector == @selector(scrollPageDown:))
