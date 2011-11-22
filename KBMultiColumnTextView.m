@@ -135,9 +135,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	[backgroundColor release];
 	backgroundColor = color;
 	
-	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *tv;
-	while (tv = [e nextObject])
+	for (tv in textViews)
 		[tv setBackgroundColor:backgroundColor];
 	
 	if ([self enclosingScrollView] != nil)
@@ -153,9 +152,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	scalePercent = percent;
 	
-	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *textView;
-	while (textView = [e nextObject])
+	for (textView in textViews)
 		[self rescaleTextView:textView];
 }
 
@@ -169,11 +167,10 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	textViewClass = tvClass;
 	
 	// Go through and replace all text views with ones of the specified class
-	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *textView;
 	id newTextView;
 	NSRect frame;
-	while (textView = [e nextObject])
+	for (textView in textViews)
 	{
 		frame = [textView frame];
 		newTextView = [[textViewClass alloc] initWithFrame:frame
@@ -252,11 +249,10 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (void)resizeAllColumns
 {
-	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *textView;
 	NSRect frame;
 	CGFloat xPos = 0.0f;
-	while (textView = [e nextObject])
+	for (textView in textViews)
 	{
 		frame = [self bounds];
 		frame.origin.x = xPos;
@@ -355,13 +351,12 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 // out of bounds errors if super tries to handle resizing while columns are being added and removed dynamically.
 - (void)resizeSubviewsWithOldSize:(NSSize)oldBoundsSize
 {
-	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *textView;
 	NSRect frame = NSInsetRect([self bounds], 0.0f, borderSize.height);
 	frame.origin.x = 0.0f;
 	frame.size.width = columnWidth - (borderSize.width * 2.0f);
 	
-	while (textView = [e nextObject])
+	for (textView in textViews)
 	{
 		frame.origin.x += borderSize.width;
 		[textView setFrame:frame];
@@ -374,9 +369,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (void)viewWillStartLiveResize
 {
-	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *tv;
-	while (tv = [e nextObject])
+	for (tv in textViews)
 		[tv setPostsFrameChangedNotifications:NO];
 	
 	[super viewWillStartLiveResize];
@@ -386,9 +380,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	[super viewDidEndLiveResize];
 	
-	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *tv;
-	while (tv = [e nextObject])
+	for (tv in textViews)
 		[tv setPostsFrameChangedNotifications:YES];
 }
 
