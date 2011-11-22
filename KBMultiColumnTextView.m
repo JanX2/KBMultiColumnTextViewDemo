@@ -165,6 +165,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	textViewClass = tvClass;
 	
 	// Go through and replace all text views with ones of the specified class
+	NSMutableArray *newTextViews = [NSMutableArray arrayWithCapacity:[textViews count]];
 	id newTextView;
 	NSRect frame;
 	for (NSTextView *textView in textViews)
@@ -174,7 +175,10 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 											 textContainer:[textView textContainer]];
 		[self replaceSubview:textView with:newTextView];
 		[self rescaleTextView:newTextView];
+		[newTextViews addObject:newTextView];
 	}
+	[textViews release];
+	textViews = [newTextViews copy];
 	
 	// Ensure our attributes are still valid
 	[self setupInitialTextViewSharedState];
@@ -300,10 +304,11 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	[layoutManager addTextContainer:textContainer];
     [textContainer release];
 	
-	NSMutableArray *tvs = [NSMutableArray arrayWithArray:textViews];
+	NSMutableArray *tvs = [textViews mutableCopy];
 	[tvs addObject:textView];
 	[textViews release];
-	textViews = [[NSArray alloc] initWithArray:tvs];
+	textViews = [tvs copy];
+	[tvs release];
 
     [textView release];
 	
@@ -320,10 +325,11 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
     NSArray *textContainers = [layoutManager textContainers];
     [layoutManager removeTextContainerAtIndex:[textContainers count] - 1];
 	
-	NSMutableArray *tvs = [NSMutableArray arrayWithArray:textViews];
+	NSMutableArray *tvs = [textViews mutableCopy];
 	[tvs removeLastObject];
 	[textViews release];
-	textViews = [[NSArray alloc] initWithArray:tvs];
+	textViews = [tvs copy];
+	[tvs release];
 	
 	// Now need to recalculate own frame
 	[self recalculateFrame];
