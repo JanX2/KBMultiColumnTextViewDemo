@@ -30,16 +30,16 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
  *	that -doubleClickAtIndex: is incredibly slow compared to -nextWordAtIndex:.
  */
 
-- (unsigned)wordCountForRange:(NSRange)range
+- (NSUInteger)wordCountForRange:(NSRange)range
 {
-	unsigned wc = 0;
+	NSUInteger wc = 0;
 	NSCharacterSet *lettersAndNumbers = [NSCharacterSet alphanumericCharacterSet];
 	
-	int index = range.location;
+	NSInteger index = range.location;
 	while (index < NSMaxRange(range))
 	{
 		//int newIndex = NSMaxRange([self doubleClickAtIndex:index]);
-		int newIndex = [self nextWordFromIndex:index forward:YES];
+		NSInteger newIndex = [self nextWordFromIndex:index forward:YES];
 		
 		NSString *word = [[self string] substringWithRange:NSMakeRange(index, newIndex-index)];
 		
@@ -61,7 +61,7 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 	return wordRange;
 }
 
-- (unsigned)wordCount
+- (NSUInteger)wordCount
 {
 	return wordCount;
 }
@@ -93,7 +93,7 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 	return self;
 }
 
-- (id)initWithAttributedString:(NSAttributedString *)aString wordCount:(unsigned)wc
+- (id)initWithAttributedString:(NSAttributedString *)aString wordCount:(NSUInteger)wc
 {
 	if (self = [super init])
 	{
@@ -115,14 +115,14 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 	return [text string];
 }
 
-- (NSDictionary *)attributesAtIndex:(unsigned)index effectiveRange:(NSRangePointer)aRange
+- (NSDictionary *)attributesAtIndex:(NSUInteger)index effectiveRange:(NSRangePointer)aRange
 {
 	return [text attributesAtIndex:index effectiveRange:aRange];
 }
 
 - (void)replaceCharactersInRange:(NSRange)aRange withString:(NSString *)aString
 {	
-	int strlen = [aString length];
+	NSInteger strlen = [aString length];
 	
 	NSRange wcRange = [self wordRangeForCharRange:aRange];
 	wordCount -= [self wordCountForRange:wcRange];
@@ -130,7 +130,7 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 									   (wcRange.length - aRange.length) + strlen);
 	
 	[text replaceCharactersInRange:aRange withString:aString];
-	int lengthChange = strlen - aRange.length;
+	NSInteger lengthChange = strlen - aRange.length;
 	[self edited:NSTextStorageEditedCharacters
 		   range:aRange
   changeInLength:lengthChange];

@@ -18,28 +18,28 @@ extern NSString *KBMultiColumnTextViewDidRemoveColumnNotification;
 	NSLayoutManager *layoutManager;
 	NSArray *textViews;
 	NSColor *backgroundColor;
-	float columnWidth;
+	CGFloat columnWidth;
 	NSSize borderSize;
 	Class textViewClass;
 	id delegate;
-	float scalePercent;
+	CGFloat scalePercent;
 }
 
 - (NSLayoutManager *)layoutManager;
 - (NSTextStorage *)textStorage;
 - (NSArray *)textViews;
 - (NSTextView *)firstTextView;
-- (int)numberOfColumns;
+- (NSInteger)numberOfColumns;
 - (void)setDelegate:(id)anObject;
 - (id)delegate;
 - (void)setBackgroundColor:(NSColor *)color;
 - (NSColor *)backgroundColor;
-- (void)setColumnWidth:(float)width;
-- (float)columnWidth;
+- (void)setColumnWidth:(CGFloat)width;
+- (CGFloat)columnWidth;
 - (void)setBorderSize:(NSSize)size;
 - (NSSize)borderSize;
-- (void)setScalePercent:(float)percent;
-- (float)scalePercent;
+- (void)setScalePercent:(CGFloat)percent;
+- (CGFloat)scalePercent;
 - (void)setTextViewClass:(Class)tvClass;
 - (Class)textViewClass;
 

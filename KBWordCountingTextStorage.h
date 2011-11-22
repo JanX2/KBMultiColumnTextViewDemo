@@ -15,13 +15,13 @@ extern NSString *KBTextStorageStatisticsDidChangeNotification;
 @interface KBWordCountingTextStorage : NSTextStorage
 {
 	NSMutableAttributedString *text;
-	unsigned wordCount;
+	NSUInteger wordCount;
 }
 
 /* Restore text with word count intact */
-- (id)initWithAttributedString:(NSAttributedString *)aString wordCount:(unsigned)wc;
+- (id)initWithAttributedString:(NSAttributedString *)aString wordCount:(NSUInteger)wc;
 
 /* Word count accessor */
-- (unsigned)wordCount;
+- (NSUInteger)wordCount;
 
 @end

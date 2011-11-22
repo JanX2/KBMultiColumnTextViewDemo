@@ -112,8 +112,8 @@
 
 - (void)statisticsDidChange:(NSNotification *)notification
 {
-	[wordField setIntValue:[textStorage wordCount]];
-	[charField setIntValue:[textStorage length]];
+	[wordField setIntegerValue:[textStorage wordCount]];
+	[charField setIntegerValue:[textStorage length]];
 }
 
 @end

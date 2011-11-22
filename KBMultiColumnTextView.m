@@ -110,7 +110,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	return [layoutManager firstTextView];
 }
 
-- (int)numberOfColumns
+- (NSInteger)numberOfColumns
 {
 	return [textViews count];
 }
@@ -145,7 +145,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	return backgroundColor;
 }
 
-- (void)setScalePercent:(float)percent
+- (void)setScalePercent:(CGFloat)percent
 {
 	scalePercent = percent;
 	
@@ -155,7 +155,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 		[self rescaleTextView:textView];
 }
 
-- (float)scalePercent
+- (CGFloat)scalePercent
 {
 	return scalePercent;
 }
@@ -187,13 +187,13 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	return textViewClass;
 }
 
-- (void)setColumnWidth:(float)width
+- (void)setColumnWidth:(CGFloat)width
 {
 	columnWidth = width;
 	[self resizeAllColumns];
 }
 
-- (float)columnWidth
+- (CGFloat)columnWidth
 {
 	return columnWidth;
 }
@@ -232,7 +232,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (void)rescaleTextView:(NSTextView *)aTextView
 {
-	float zoom = scalePercent / 100.0;
+	CGFloat zoom = scalePercent / 100.0;
 	
 	NSRect textViewBounds = [aTextView frame];
 	textViewBounds.size.height = textViewBounds.size.height / zoom;
@@ -251,7 +251,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *textView;
 	NSRect frame;
-	float xPos = 0.0;
+	CGFloat xPos = 0.0;
 	while (textView = [e nextObject])
 	{
 		frame = [self bounds];
@@ -414,8 +414,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	else
 	{
 		// Layout is done and it all fit.  See if we can axe some columns.
-		unsigned lastUsedContainerIndex = [containers indexOfObjectIdenticalTo:textContainer];
-		unsigned numContainers = [containers count];
+		NSUInteger lastUsedContainerIndex = [containers indexOfObjectIdenticalTo:textContainer];
+		NSUInteger numContainers = [containers count];
 		while (++lastUsedContainerIndex < numContainers)
 			[self removeColumn];
 	}
@@ -476,14 +476,14 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	}
 	else
 	{
-		int glyphIndex = [layoutManager glyphRangeForCharacterRange:selectedRange
+		NSInteger glyphIndex = [layoutManager glyphRangeForCharacterRange:selectedRange
 										   actualCharacterRange:nil].location;
 		tc = [layoutManager textContainerForGlyphAtIndex:glyphIndex
 										  effectiveRange:nil
 								 withoutAdditionalLayout:YES];
 	}
 	
-	int index = [containers indexOfObject:tc];
+	NSInteger index = [containers indexOfObject:tc];
 	if (index >= [textViews count])
 		return;
 	
@@ -510,7 +510,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	if (aSelector == @selector(scrollPageDown:))
 	{
 		NSRect frame = [self visibleRect];
-		frame.origin.x += (columnWidth - ((int)frame.origin.x % (int)columnWidth));
+		frame.origin.x += (columnWidth - ((NSInteger)frame.origin.x % (NSInteger)columnWidth));
 		[self scrollRectToVisible:frame];
 		return YES;
 	}
@@ -518,7 +518,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	else if (aSelector == @selector(scrollPageUp:))
 	{
 		NSRect frame = [self visibleRect];
-		frame.origin.x -= columnWidth - (columnWidth - ((int)frame.origin.x % (int)columnWidth));
+		frame.origin.x -= columnWidth - (columnWidth - ((NSInteger)frame.origin.x % (NSInteger)columnWidth));
 		// If we haven't moved, leap back another column
 		if (frame.origin.x == [self visibleRect].origin.x)
 			frame.origin.x -= columnWidth;
