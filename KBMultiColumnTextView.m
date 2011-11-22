@@ -23,6 +23,8 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 - (void)recalculateFrame;
 - (void)resizeAllColumns;
 - (void)rescaleTextView:(NSTextView *)aTextView;
+- (void)textOfColumnDidChange:(NSNotification *)notification;
+- (void)selectionDidChange:(NSNotification *)notification;
 @end
 
 
@@ -35,14 +37,16 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (id)initWithFrame:(NSRect)frame
 {
-	if (self = [super initWithFrame:frame])
+	self = [super initWithFrame:frame];
+	
+	if (self)
     {
 		delegate = nil;
 		textViews = [[NSArray alloc] init];
         [self setBackgroundColor:[NSColor whiteColor]];
-		[self setColumnWidth:360.0];
-		[self setBorderSize:NSMakeSize(20.0,16.0)];
-		[self setScalePercent:100.0];
+		[self setColumnWidth:360.0f];
+		[self setBorderSize:NSMakeSize(20.0f, 16.0f)];
+		[self setScalePercent:100.0f];
 		[self setTextViewClass:[NSTextView class]];
 		
 		// Create layout manager
@@ -232,7 +236,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 
 - (void)rescaleTextView:(NSTextView *)aTextView
 {
-	CGFloat zoom = scalePercent / 100.0;
+	CGFloat zoom = scalePercent / 100.0f;
 	
 	NSRect textViewBounds = [aTextView frame];
 	textViewBounds.size.height = textViewBounds.size.height / zoom;
@@ -251,7 +255,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *textView;
 	NSRect frame;
-	CGFloat xPos = 0.0;
+	CGFloat xPos = 0.0f;
 	while (textView = [e nextObject])
 	{
 		frame = [self bounds];
@@ -282,7 +286,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
     // Figure frame for NSTextView (and NSTextContainer size)
 	NSRect frame = NSInsetRect([self bounds], borderSize.width, borderSize.height);
 	frame.origin.x = ([textViews count] * columnWidth) + borderSize.width;
-	frame.size.width = columnWidth - (borderSize.width * 2.0);
+	frame.size.width = columnWidth - (borderSize.width * 2.0f);
 	
     // Create and configure NSTextContainer
     textContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(frame.size.width, frame.size.height)];
@@ -296,7 +300,7 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
     [textView setHorizontallyResizable:NO];
     [textView setVerticallyResizable:NO];
 	
-	if (scalePercent != 100.0)
+	if (scalePercent != 100.0f)
 		[self rescaleTextView:textView];
 	
     [self addSubview:textView];
@@ -353,9 +357,9 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 {
 	NSEnumerator *e = [textViews objectEnumerator];
 	NSTextView *textView;
-	NSRect frame = NSInsetRect([self bounds],0.0,borderSize.height);
-	frame.origin.x = 0.0;
-	frame.size.width = columnWidth - (borderSize.width * 2.0);
+	NSRect frame = NSInsetRect([self bounds], 0.0f, borderSize.height);
+	frame.origin.x = 0.0f;
+	frame.size.width = columnWidth - (borderSize.width * 2.0f);
 	
 	while (textView = [e nextObject])
 	{
@@ -483,11 +487,11 @@ NSString *KBMultiColumnTextViewDidRemoveColumnNotification = @"KBMultiColumnText
 								 withoutAdditionalLayout:YES];
 	}
 	
-	NSInteger index = [containers indexOfObject:tc];
-	if (index >= [textViews count])
+	NSUInteger thisIndex = [containers indexOfObject:tc];
+	if (thisIndex >= [textViews count])
 		return;
 	
-	NSTextView *tv = [textViews objectAtIndex:index];
+	NSTextView *tv = [textViews objectAtIndex:thisIndex];
 	NSRect frame = [tv frame];
 	if (!NSContainsRect([self visibleRect],frame))
 	{

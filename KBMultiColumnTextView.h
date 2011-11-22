@@ -13,7 +13,7 @@
 extern NSString *KBMultiColumnTextViewDidAddColumnNotification;
 extern NSString *KBMultiColumnTextViewDidRemoveColumnNotification;
 
-@interface KBMultiColumnTextView : NSView
+@interface KBMultiColumnTextView : NSView <NSLayoutManagerDelegate, NSTextViewDelegate>
 {
 	NSLayoutManager *layoutManager;
 	NSArray *textViews;

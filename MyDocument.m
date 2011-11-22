@@ -8,11 +8,17 @@
 
 #import "MyDocument.h"
 
+@interface MyDocument (Private)
+- (void)statisticsDidChange:(NSNotification *)notification;
+@end
+
 @implementation MyDocument
 
 - (id)init
 {
-	if (self = [super init])
+	self = [super init];
+	
+	if (self)
 	{
 		textStorage = [[KBWordCountingTextStorage alloc] init];
 		loadedText = nil;

@@ -35,20 +35,20 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 	NSUInteger wc = 0;
 	NSCharacterSet *lettersAndNumbers = [NSCharacterSet alphanumericCharacterSet];
 	
-	NSInteger index = range.location;
-	while (index < NSMaxRange(range))
+	NSUInteger currentIndex = range.location;
+	while (currentIndex < NSMaxRange(range))
 	{
 		//int newIndex = NSMaxRange([self doubleClickAtIndex:index]);
-		NSInteger newIndex = [self nextWordFromIndex:index forward:YES];
+		NSInteger newIndex = [self nextWordFromIndex:currentIndex forward:YES];
 		
-		NSString *word = [[self string] substringWithRange:NSMakeRange(index, newIndex-index)];
+		NSString *word = [[self string] substringWithRange:NSMakeRange(currentIndex, newIndex-currentIndex)];
 		
 		// Make sure it is a valid word - ie. it must contain letters or numbers,
 		// otherwise don't count it
 		if ([word rangeOfCharacterFromSet:lettersAndNumbers].location != NSNotFound)
 			wc++;
 		
-		index = newIndex;
+		currentIndex = newIndex;
 	}
 	return wc;
 }
@@ -75,7 +75,9 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 
 - (id)init
 {
-	if (self = [super init])
+	self = [super init];
+	
+	if (self)
 	{
 		text = [[NSMutableAttributedString alloc] init];
 		wordCount = 0;
@@ -85,7 +87,9 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 
 - (id)initWithAttributedString:(NSAttributedString *)aString
 {
-	if (self = [super init])
+	self = [super init];
+	
+	if (self)
 	{
 		text = [aString mutableCopy];
 		wordCount = [self wordCountForRange:NSMakeRange(0,[text length])];
@@ -95,7 +99,9 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 
 - (id)initWithAttributedString:(NSAttributedString *)aString wordCount:(NSUInteger)wc
 {
-	if (self = [super init])
+	self = [super init];
+	
+	if (self)
 	{
 		text = [aString mutableCopy];
 		wordCount = wc;
@@ -115,22 +121,22 @@ NSString *KBTextStorageStatisticsDidChangeNotification = @"KBTextStorageStatisti
 	return [text string];
 }
 
-- (NSDictionary *)attributesAtIndex:(NSUInteger)index effectiveRange:(NSRangePointer)aRange
+- (NSDictionary *)attributesAtIndex:(NSUInteger)anIndex effectiveRange:(NSRangePointer)aRange
 {
-	return [text attributesAtIndex:index effectiveRange:aRange];
+	return [text attributesAtIndex:anIndex effectiveRange:aRange];
 }
 
 - (void)replaceCharactersInRange:(NSRange)aRange withString:(NSString *)aString
 {	
-	NSInteger strlen = [aString length];
+	NSInteger stringLength = [aString length];
 	
 	NSRange wcRange = [self wordRangeForCharRange:aRange];
 	wordCount -= [self wordCountForRange:wcRange];
 	NSRange changedRange = NSMakeRange(wcRange.location,
-									   (wcRange.length - aRange.length) + strlen);
+									   (wcRange.length - aRange.length) + stringLength);
 	
 	[text replaceCharactersInRange:aRange withString:aString];
-	NSInteger lengthChange = strlen - aRange.length;
+	NSInteger lengthChange = stringLength - aRange.length;
 	[self edited:NSTextStorageEditedCharacters
 		   range:aRange
   changeInLength:lengthChange];
